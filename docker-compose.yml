@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg18-trixie
+    container_name: pika-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-pika}
+      POSTGRES_USER: ${POSTGRES_USER:-winnerx0}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-2007}
+    ports:
+      - "5005:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-winnerx0} -d ${POSTGRES_DB:-pika}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

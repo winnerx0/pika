@@ -1,0 +1,31 @@
+spring:
+  application:
+  name: pika
+
+  datasource:
+    url: jdbc:postgresql://localhost:5005/pika
+    username: winnerx0
+    password: 2007
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      max-lifetime: 3600
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      embedding:
+        model: text-embedding-3-small
+      chat:
+        model: gpt-4o-mini
+    vectorstore:
+      pgvector:
+        initialize-schema: true
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 1536
+        table-name: vector_store
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+jwt:
+  secret-key: crfHOWuEEr3llV9aYgNJnG/Bih7D+aKPFwYl0mXZI8A=

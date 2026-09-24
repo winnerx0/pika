@@ -1,0 +1,21 @@
+package com.winnerx0.pika.config;
+
+import org.springframework.ai.rag.retrieval.search.DocumentRetriever;
+import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
+import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class RagConfig {
+
+    @Bean
+    public DocumentRetriever documentRetriever(VectorStore vectorStore){
+
+        return VectorStoreDocumentRetriever.builder()
+                .vectorStore(vectorStore)
+                .topK(5)
+                .similarityThreshold(0.6)
+                .build();
+    }
+}

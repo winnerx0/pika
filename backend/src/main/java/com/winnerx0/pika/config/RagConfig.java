@@ -14,8 +14,6 @@ public class RagConfig {
 
         return VectorStoreDocumentRetriever.builder()
                 .vectorStore(vectorStore)
-                .topK(5)
-                .similarityThreshold(0.6)
                 .build();
     }
 }

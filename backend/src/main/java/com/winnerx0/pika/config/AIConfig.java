@@ -15,7 +15,9 @@ public class AIConfig {
     public ChatClient chatClient(ChatModel chatModel, VectorStore vectorStore){
         return ChatClient.builder(chatModel)
                 .defaultAdvisors(QuestionAnswerAdvisor.builder(vectorStore)
-                        .searchRequest(SearchRequest.builder().build())
+                        .searchRequest(SearchRequest.builder()
+                                .topK(5)
+                                .similarityThreshold(0.3).build())
                         .build())
                 .build();
     }

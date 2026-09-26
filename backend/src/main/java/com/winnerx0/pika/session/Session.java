@@ -21,7 +21,11 @@ public class Session extends AuditMetadata {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @Column(nullable = false)
+    private String title;
+
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
+    @OrderBy("createdDate ASC")
     private List<Message> messages;
 
 }

@@ -62,15 +62,15 @@ public class JwtService {
         return buildToken(claims, user, 30 * 60 * 1000);
     }
 
-    public boolean isTokenValid(String token, String id){
-        return extractExpiration(token).after(new Date()) && extractSubject(token).equals(id);
+    public boolean isTokenValid(String token, String subject){
+        return extractExpiration(token).after(new Date()) && extractSubject(token).equals(subject);
     }
 
     private String buildToken(Map<String, Object> claims, User user, long expiration){
 
         return Jwts.builder()
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .subject(user.getId().toString())
+                .subject(user.getUsername())
                 .claims(claims)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))

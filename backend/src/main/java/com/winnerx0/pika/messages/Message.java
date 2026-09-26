@@ -20,8 +20,12 @@ public class Message extends AuditMetadata {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MessageRole role = MessageRole.USER;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "session_id")

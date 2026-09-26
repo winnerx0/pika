@@ -36,3 +36,5 @@ out/
 .vscode/
 
 .env
+**/node_modules/
+frontend/dist/

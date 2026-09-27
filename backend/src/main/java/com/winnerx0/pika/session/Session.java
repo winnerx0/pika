@@ -2,6 +2,7 @@ package com.winnerx0.pika.session;
 
 import com.winnerx0.pika.audit.AuditMetadata;
 import com.winnerx0.pika.messages.Message;
+import com.winnerx0.pika.users.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,4 +29,7 @@ public class Session extends AuditMetadata {
     @OrderBy("createdDate ASC")
     private List<Message> messages;
 
+//    @ManyToOne
+//    @JoinColumn(nullable = false, name = "user_id")
+//    private User user;
 }

@@ -3,7 +3,7 @@ spring:
   name: pika
 
   datasource:
-    url: jdbc:postgresql://localhost:5005/pika
+    url: jdbc:postgresql://localhost:5432/pika
     username: winnerx0
     password: 2007
     driver-class-name: org.postgresql.Driver

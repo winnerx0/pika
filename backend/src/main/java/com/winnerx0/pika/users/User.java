@@ -2,6 +2,7 @@ package com.winnerx0.pika.users;
 
 import com.winnerx0.pika.refreshtoken.RefreshToken;
 import com.winnerx0.pika.audit.AuditMetadata;
+import com.winnerx0.pika.session.Session;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,6 +45,9 @@ public class User extends AuditMetadata implements UserDetails {
 
     @Column(nullable = false)
     private boolean verified;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Session> sessions;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

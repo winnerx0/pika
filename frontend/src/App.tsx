@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { api, subscribeToSession } from './api'
 
-type IconName = 'plus' | 'message' | 'send' | 'logout' | 'menu' | 'spark' | 'chevron' | 'close' | 'sun'
+type IconName = 'plus' | 'message' | 'send' | 'logout' | 'menu' | 'spark' | 'chevron' | 'close' | 'sun' | 'moon'
+type Theme = 'light' | 'dark'
 type StoredUser = { name: string; email: string; accessToken: string; refreshToken: string }
 type ChatMessage = { id: string; content: string; role: 'user' | 'assistant'; sessionId?: string }
 type ChatSession = { id: string; title: string; messages?: ChatMessage[] }
@@ -11,6 +12,12 @@ type MessageResponse = { id: string; content: string; sessionId: string; role?: 
 
 function errorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback
+}
+
+function getSavedTheme(): Theme {
+  try {
+    return localStorage.getItem('pika-theme') === 'dark' ? 'dark' : 'light'
+  } catch { return 'light' }
 }
 
 const starterPrompts = [
@@ -31,6 +38,7 @@ function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
     chevron: <><path d="m9 18 6-6-6-6" /></>,
     close: <><path d="m18 6-12 12M6 6l12 12" /></>,
     sun: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" /></>,
+    moon: <><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z" /></>,
   }
   return <svg {...common}>{paths[name]}</svg>
 }
@@ -110,6 +118,7 @@ function AuthScreen({ onAuthenticated }: { onAuthenticated: (user: StoredUser) =
 }
 
 function App() {
+  const [theme, setTheme] = useState<Theme>(getSavedTheme)
   const [user, setUser] = useState<StoredUser | null>(getStoredUser)
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -124,6 +133,11 @@ function App() {
   const streamCloseRef = useRef<(() => void) | null>(null)
   const initials = useMemo(() => (user?.name || 'P').slice(0, 1).toUpperCase(), [user])
   const activeSession = sessions.find(session => session.id === activeId)
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    try { localStorage.setItem('pika-theme', theme) } catch { /* Theme still applies for this session. */ }
+  }, [theme])
 
   useEffect(() => {
     if (!user) return
@@ -236,7 +250,7 @@ function App() {
         </div>
       </aside>
       <section className="workspace">
-        <header className="topbar"><button className="icon-button mobile-menu" aria-label="Open navigation" onClick={() => setSidebarOpen(true)}><Icon name="menu" /></button><div className="breadcrumb"><span>Nigerian Tax Act</span><Icon name="chevron" size={14} /><strong>{activeSession?.title || 'New question'}</strong></div><div className="topbar-right"><span className="online-indicator"><i /> Tax Act AI</span><button className="icon-button topbar-profile" aria-label="Account" onClick={signOut}><div className="avatar avatar-small">{initials}</div></button></div></header>
+        <header className="topbar"><button className="icon-button mobile-menu" aria-label="Open navigation" onClick={() => setSidebarOpen(true)}><Icon name="menu" /></button><div className="breadcrumb"><span>Nigerian Tax Act</span><Icon name="chevron" size={14} /><strong>{activeSession?.title || 'New question'}</strong></div><div className="topbar-right"><span className="online-indicator"><i /> Tax Act AI</span><button className="icon-button theme-toggle" onClick={() => setTheme(current => current === 'dark' ? 'light' : 'dark')} aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}><Icon name={theme === 'dark' ? 'sun' : 'moon'} size={17} /></button><button className="icon-button topbar-profile" aria-label="Account" onClick={signOut}><div className="avatar avatar-small">{initials}</div></button></div></header>
         <div className={`chat-area ${messages.length ? 'chat-has-messages' : ''}`}>
           {messages.length === 0 && !thinking ? <div className="welcome-content"><div className="welcome-icon"><Icon name="spark" size={23} /></div><span className="eyebrow">NIGERIAN TAX ACT ASSISTANT</span><h1>What does the Act<br />say about <em>your question?</em></h1><p>Ask about a tax provision, process, or obligation.</p><div className="suggestion-grid">{starterPrompts.map(prompt => <button className="suggestion-card" key={prompt.text} onClick={() => sendMessage(prompt.text)}><span className="suggestion-icon">{prompt.icon}</span><span>{prompt.text}</span><Icon name="chevron" size={15} /></button>)}</div></div> : <div className="message-thread">{messages.map(message => <article className={`message-row ${message.role === 'user' ? 'message-user' : 'message-assistant'}`} key={message.id}><div className="message-avatar">{message.role === 'user' ? initials : <Icon name="spark" size={15} />}</div><div className="message-body"><span className="message-author">{message.role === 'user' ? 'You' : 'Pika'}</span><p>{message.content}</p></div></article>)}{thinking && <article className="message-row message-assistant"><div className="message-avatar"><Icon name="spark" size={15} /></div><div className="message-body"><span className="message-author">Pika</span><div className="typing-indicator"><i /><i /><i /></div></div></article>}<div ref={bottomRef} /></div>}
           {error && <div className="inline-error" role="status"><span>{error}</span><button className="icon-button" aria-label="Dismiss error" onClick={() => setError('')}><Icon name="close" size={15} /></button></div>}

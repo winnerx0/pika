@@ -27,7 +27,7 @@ public class SecurityConfig {
     private final AuthenticationManager authenticationManager;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http){
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter){
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
 
                         auth.anyRequest().permitAll())
-//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

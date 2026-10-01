@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,10 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
+@Slf4j
 @Service
 @NoArgsConstructor
 @AllArgsConstructor
@@ -68,10 +71,12 @@ public class JwtService {
 
     private String buildToken(Map<String, Object> claims, User user, long expiration){
 
+        log.info("user id {}", user.getId());
         return Jwts.builder()
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .subject(user.getUsername())
+                .subject(String.valueOf(user.getId()))
                 .claims(claims)
+                .id(String.valueOf(UUID.randomUUID()))
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .compact();

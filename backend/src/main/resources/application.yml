@@ -15,7 +15,7 @@ spring:
       embedding:
         model: text-embedding-3-small
       chat:
-        model: gpt-4o-mini
+        model: gpt-5-nano
     vectorstore:
       pgvector:
         initialize-schema: true

@@ -58,7 +58,7 @@ public class AIConfig {
                         Insufficient Context:
                         Only use the following response when the retrieved context genuinely does not contain enough relevant information to answer:
 
-                        "I do not have enough information in the provided context to answer that question."
+                        "I do not have enough information to answer that question."
 
                         Do not use this response merely because the user's wording differs from the wording in the retrieved law.
 

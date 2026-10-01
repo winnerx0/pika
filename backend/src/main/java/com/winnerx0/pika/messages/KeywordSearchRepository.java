@@ -21,7 +21,7 @@ public class KeywordSearchRepository {
                 (
                     ts_rank_cd(
                             search_vector,
-                            websearch_to_tsquery('simple', ?)
+                            websearch_to_tsquery('english', ?)
                         )
                     +
                     CASE WHEN lower(content) LIKE '%' || lower(?) || '%'
@@ -30,7 +30,7 @@ public class KeywordSearchRepository {
                     END
                 ) AS score
                 FROM vector_store
-                WHERE search_vector @@ websearch_to_tsquery('simple', ?)
+                WHERE search_vector @@ websearch_to_tsquery('english', ?)
                 OR lower(content) LIKE '%' || lower(?) || '%'
                 ORDER BY score DESC
                 LIMIT ?

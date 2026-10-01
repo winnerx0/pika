@@ -8,14 +8,19 @@ import com.winnerx0.pika.messages.dto.MessageResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.vectorstore.pgvector.PgVectorStore;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,10 +44,18 @@ public class MessageServiceImpl implements MessageService {
         Session session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new EntityNotFoundException("Session not found"));
 
+        List<org.springframework.ai.chat.messages.Message> messages = messageRepository.findAllBySessionOrderByCreatedDateAsc(session, Limit.of(20)).stream().map(message -> {
+            if (Objects.requireNonNull(message.getRole()) == MessageRole.ASSISTANT) {
+                return new AssistantMessage(message.getContent());
+            }
+            return new UserMessage(message.getContent());
+        }).collect(Collectors.toList());
+
         vectorStore.similaritySearch(messageRequest.getContent());
 
         Flux<String> response = chatClient.prompt()
                 .user(messageRequest.getContent())
+                .messages(messages)
                 .stream()
                 .content();
 
